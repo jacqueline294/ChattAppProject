@@ -7,11 +7,16 @@
 
 import SwiftUI
 import Firebase
+import FirebaseAuth
+import FirebaseStorage
 
 struct LoginView: View {
-    @State var isLoginMode = false
+    @State var isLoginMode = true
     @State var email = ""
     @State var password = ""
+    @State var image: UIImage?
+    @State private var errorMessage = ""
+    @State private var isLoading = false
     
     init() {
         FirebaseApp.configure()
@@ -22,22 +27,27 @@ struct LoginView: View {
             ScrollView {
                 
                 VStack(spacing: 16) {
+                    
+                    Text("Welcome to Chat Link!")
+                                .font(.largeTitle)
+                                .fontWeight(.bold)
+                                .padding(.top, 32)
+                                    
+                    if isLoginMode {
+                    Image("Chat Link") //
+                            .resizable()
+                            .scaledToFit()
+                            .frame(width: 150, height: 150) // A
+                            .padding(.top, 32)
+                        }
+                    Spacer()
+                    
                     Picker(selection: $isLoginMode, label: Text("Picker here")) {
                         Text("Login")
                             .tag(true)
                         Text("Create Account")
                             .tag(false)
                     }.pickerStyle(SegmentedPickerStyle())
-                        
-                    if !isLoginMode {
-                        Button {
-                            
-                        } label: {
-                            Image(systemName: "person.fill")
-                                .font(.system(size: 64))
-                                .padding()
-                        }
-                    }
                     
                     Group {
                         TextField("Email", text: $email)
@@ -48,22 +58,30 @@ struct LoginView: View {
                     .padding(12)
                     .background(Color.white)
                     
-                    Button {
-                        handleAction()
-                    } label: {
-                        HStack {
-                            Spacer()
-                            Text(isLoginMode ? "Log In" : "Create Account")
-                                .foregroundColor(.white)
-                                .padding(.vertical, 10)
-                                .font(.system(size: 14, weight: .semibold))
-                            Spacer()
-                        }.background(Color.blue)
-                        
+                    if isLoading {
+                        ProgressView()
+                    } else {
+                        Button {
+                            handleAction()
+                        } label: {
+                            HStack {
+                                Spacer()
+                                Text(isLoginMode ? "Log In" : "Create Account")
+                                    .foregroundColor(.white)
+                                    .padding(.vertical, 10)
+                                    .font(.system(size: 14, weight: .semibold))
+                                Spacer()
+                            }.background(Color.blue)
+                        }
+                    }
+                    
+                    if !errorMessage.isEmpty {
+                        Text(errorMessage)
+                            .foregroundColor(.red)
+                            .font(.system(size: 14))
                     }
                 }
                 .padding()
-                
             }
             .navigationTitle(isLoginMode ? "Log In" : "Create Account")
             .background(Color(.init(white: 0, alpha: 0.05))
@@ -72,14 +90,44 @@ struct LoginView: View {
     }
     
     private func handleAction() {
+        isLoading = true
+        errorMessage = ""
+        
         if isLoginMode {
-            print("Should log into Firebase with existing credentials")
+            loginUser()
         } else {
-            print("Register a new account inside of Firebase Auth and then store image in Storage somehow....")
+            createNewAccount()
         }
     }
+    
+    private func loginUser() {
+        Auth.auth().signIn(withEmail: email, password: password) { result, error in
+            isLoading = false
+            if let error = error {
+                errorMessage = "Failed to login: \(error.localizedDescription)"
+                return
+            }
+            print("Successfully logged in user: \(result?.user.uid ?? "")")
+        }
+    }
+    
+    private func createNewAccount() {
+        Auth.auth().createUser(withEmail: email, password: password) { result, error in
+            isLoading = false
+            if let error = error {
+                errorMessage = "Failed to create account: \(error.localizedDescription)"
+                return
+            }
+            
+            print("Successfully created user: \(result?.user.uid ?? "")")
+            
+        }
+    }
+    
+
 }
 
 #Preview {
     LoginView()
 }
+
