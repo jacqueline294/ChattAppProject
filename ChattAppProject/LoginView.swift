@@ -11,12 +11,13 @@ import FirebaseAuth
 import FirebaseStorage
 
 struct LoginView: View {
-    @State var isLoginMode = true
+    @State var isLoginMode = false
     @State var email = ""
     @State var password = ""
     @State var image: UIImage?
     @State private var errorMessage = ""
     @State private var isLoading = false
+    @State  var shouldshowImagePicker = false
     
     init() {
         FirebaseApp.configure()
@@ -32,7 +33,8 @@ struct LoginView: View {
                                 .font(.largeTitle)
                                 .fontWeight(.bold)
                                 .padding(.top, 32)
-                                    
+                    
+                    //logo in the login view mode
                     if isLoginMode {
                     Image("Chat Link") //
                             .resizable()
@@ -41,13 +43,25 @@ struct LoginView: View {
                             .padding(.top, 32)
                         }
                     Spacer()
-                    
+                    // for choosing which mode view you want to be.
                     Picker(selection: $isLoginMode, label: Text("Picker here")) {
                         Text("Login")
                             .tag(true)
                         Text("Create Account")
                             .tag(false)
                     }.pickerStyle(SegmentedPickerStyle())
+                    
+                    if !isLoginMode {
+                        
+                        Button {
+                            shouldshowImagePicker.toggle()
+                            
+                        } label: {Image(systemName: "person.fill")
+                                .font(.system(size: 64))
+                                .padding()
+                            
+                        }
+                    }
                     
                     Group {
                         TextField("Email", text: $email)
