@@ -6,33 +6,28 @@
 //
 
 import SwiftUI
-import Firebase
 import FirebaseAuth
 import FirebaseStorage
-import FirebaseFirestore
 
 struct LoginView: View {
-    @State var isLoginMode = false
-    @State var email = ""
-    @State var password = ""
-    @State var image: UIImage?
+    @State private var isLoginMode = false
+    @State private var email = ""
+    @State private var password = ""
+    @State private var image: UIImage?
     @State private var errorMessage = ""
     @State private var isLoading = false
     @State private var loginStatusMessage = ""
-    @State var shouldShowImagePicker = false
+    @State private var shouldShowImagePicker = false
     
     var body: some View {
         NavigationView {
             ScrollView {
-                
                 VStack(spacing: 16) {
-                    
                     Text("Welcome to Chat Link!")
                         .font(.largeTitle)
                         .fontWeight(.bold)
                         .padding(.top, 32)
                     
-                    // logo in the login view mode
                     if isLoginMode {
                         Image("Chat Link")
                             .resizable()
@@ -40,25 +35,21 @@ struct LoginView: View {
                             .frame(width: 150, height: 150)
                             .padding(.top, 32)
                     }
-                    Spacer()
                     
-                    // for choosing login or create account view
-                    Picker(selection: $isLoginMode, label: Text("Picker here")) {
-                        Text("Login")
-                            .tag(true)
-                        Text("Create Account")
-                            .tag(false)
-                    }.pickerStyle(SegmentedPickerStyle())
+                    Picker("Login or Create Account", selection: $isLoginMode) {
+                        Text("Login").tag(true)
+                        Text("Create Account").tag(false)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
+                    .padding()
                     
                     if !isLoginMode {
                         Button {
                             shouldShowImagePicker.toggle()
                         } label: {
-                            
-                            
                             VStack {
-                                if let image = self.image {
-                                    Image(uiImage: image)
+                                if let selectedImage = self.image {
+                                    Image(uiImage: selectedImage)
                                         .resizable()
                                         .scaledToFill()
                                         .frame(width: 128, height: 128)
@@ -71,19 +62,19 @@ struct LoginView: View {
                                 }
                             }
                             .overlay(RoundedRectangle(cornerRadius: 64)
-                                .stroke(Color.black, lineWidth: 3)
-                            )
-                            
+                                .stroke(Color.black, lineWidth: 3))
                         }
                     }
-                    Group {
-                        TextField("Email", text: $email)
-                            .keyboardType(.emailAddress)
-                            .autocapitalization(.none)
-                        SecureField("Password", text: $password)
-                    }
-                    .padding(12)
-                    .background(Color.white)
+                    
+                    TextField("Email", text: $email)
+                        .keyboardType(.emailAddress)
+                        .autocapitalization(.none)
+                        .padding(12)
+                        .background(Color.white)
+                    
+                    SecureField("Password", text: $password)
+                        .padding(12)
+                        .background(Color.white)
                     
                     if isLoading {
                         ProgressView()
@@ -91,15 +82,14 @@ struct LoginView: View {
                         Button {
                             handleAction()
                         } label: {
-                            HStack {
-                                Spacer()
-                                Text(isLoginMode ? "Log In" : "Create Account")
-                                    .foregroundColor(.white)
-                                    .padding(.vertical, 10)
-                                    .font(.system(size: 14, weight: .semibold))
-                                Spacer()
-                            }.background(Color.blue)
+                            Text(isLoginMode ? "Log In" : "Create Account")
+                                .foregroundColor(.white)
+                                .padding()
+                                .frame(maxWidth: .infinity)
+                                .background(Color.blue)
+                                .cornerRadius(8)
                         }
+                        .disabled(isLoading)  // Disabling button while loading
                     }
                     
                     if !errorMessage.isEmpty {
@@ -117,9 +107,9 @@ struct LoginView: View {
                 .padding()
             }
             .navigationTitle(isLoginMode ? "Log In" : "Create Account")
-            .background(Color(.init(white: 0, alpha: 0.05)).ignoresSafeArea())
+            .background(Color(.systemGray6))
         }
-        .fullScreenCover(isPresented: $shouldShowImagePicker, onDismiss: nil) {
+        .fullScreenCover(isPresented: $shouldShowImagePicker) {
             ImagePicker(image: $image)
         }
     }
@@ -143,7 +133,6 @@ struct LoginView: View {
                 errorMessage = "Failed to login: \(error.localizedDescription)"
                 return
             }
-            print("Successfully logged in user: \(result?.user.uid ?? "")")
             loginStatusMessage = "Successfully logged in as user: \(result?.user.uid ?? "")"
         }
     }
@@ -155,38 +144,33 @@ struct LoginView: View {
                 errorMessage = "Failed to create account: \(error.localizedDescription)"
                 return
             }
-            
-            print("Successfully created user: \(result?.user.uid ?? "")")
             loginStatusMessage = "Successfully created account: \(result?.user.uid ?? "")"
             persistImageToStorage()
         }
     }
     
     private func persistImageToStorage() {
-        //        let filename = UUID().uuidString
-        guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
-        let ref = FirebaseManager.shared.storage.reference(withPath: uid)
+        guard let uid = Auth.auth().currentUser?.uid else { return }
+        let ref = Storage.storage().reference(withPath: uid)
         guard let imageData = self.image?.jpegData(compressionQuality: 0.5) else { return }
-        ref.putData(imageData, metadata: nil) { metadata, err in
-            if let err = err {
-                self.loginStatusMessage = "Failed to push image to Storage: \(err)"
+        
+        ref.putData(imageData, metadata: nil) { metadata, error in
+            if let error = error {
+                loginStatusMessage = "Failed to upload image: \(error.localizedDescription)"
                 return
             }
-            
-            ref.downloadURL { url, err in
-                if let err = err {
-                    self.loginStatusMessage = "Failed to retrieve downloadURL: \(err)"
+            ref.downloadURL { url, error in
+                if let error = error {
+                    loginStatusMessage = "Failed to retrieve download URL: \(error.localizedDescription)"
                     return
                 }
-                
-                self.loginStatusMessage = "Successfully stored image with url: \(url?.absoluteString ?? "")"
-                print(url?.absoluteString)
-                
-                guard let url = url else { return }
-                self.storeUserInformation(imageProfileUrl: url)
+                if let url = url {
+                    storeUserInformation(imageProfileUrl: url)
+                }
             }
         }
     }
+    
     private func storeUserInformation(imageProfileUrl: URL) {
         guard let uid = FirebaseManager.shared.auth.currentUser?.uid else { return }
         let userData = ["email": self.email, "uid": uid, "profileImageUrl": imageProfileUrl.absoluteString]
@@ -201,11 +185,11 @@ struct LoginView: View {
                 print("Success")
             }
     }
-    
-    struct LoginView_Previews: PreviewProvider {
-        static var previews: some View {
-            LoginView()
-        }
-    }
-    
 }
+        
+        struct LoginView_Previews: PreviewProvider {
+            static var previews: some View {
+                LoginView()
+            }
+        }
+    
