@@ -37,6 +37,8 @@
 		D47CD2672CCF58DF00E37F15 /* FirebaseStorage in Frameworks */ = {isa = PBXBuildFile; productRef = D47CD2662CCF58DF00E37F15 /* FirebaseStorage */; };
 		D47CD2692CCF58DF00E37F15 /* FirebaseStorageCombine-Community in Frameworks */ = {isa = PBXBuildFile; productRef = D47CD2682CCF58DF00E37F15 /* FirebaseStorageCombine-Community */; };
 		D47CD26B2CCF58DF00E37F15 /* FirebaseVertexAI in Frameworks */ = {isa = PBXBuildFile; productRef = D47CD26A2CCF58DF00E37F15 /* FirebaseVertexAI */; };
+		D47CD2712CD0E57F00E37F15 /* MainMessageViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = D47CD2702CD0E57F00E37F15 /* MainMessageViewModel.swift */; };
+		D47CD2742CD0E68B00E37F15 /* SDWebImageSwiftUI in Frameworks */ = {isa = PBXBuildFile; productRef = D47CD2732CD0E68B00E37F15 /* SDWebImageSwiftUI */; };
 		D48CB9D52CC63CD400EBA74C /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48CB9D42CC63CB100EBA74C /* ImagePicker.swift */; };
 		D48CB9DA2CC66D4500EBA74C /* firebaseManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = D48CB9D92CC66D4500EBA74C /* firebaseManager.swift */; };
 /* End PBXBuildFile section */
@@ -49,6 +51,7 @@
 		D44A22302CBEDEF900E8D847 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		D44A22582CBFB92D00E8D847 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		D47CD2352CCF526100E37F15 /* MainMessagesView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMessagesView.swift; sourceTree = "<group>"; };
+		D47CD2702CD0E57F00E37F15 /* MainMessageViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainMessageViewModel.swift; sourceTree = "<group>"; };
 		D48CB9D42CC63CB100EBA74C /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		D48CB9D92CC66D4500EBA74C /* firebaseManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = firebaseManager.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -68,6 +71,7 @@
 				D47CD2512CCF58DF00E37F15 /* FirebaseDynamicLinks in Frameworks */,
 				D47CD2432CCF58DF00E37F15 /* FirebaseAppCheck in Frameworks */,
 				D47CD2472CCF58DF00E37F15 /* FirebaseAuth in Frameworks */,
+				D47CD2742CD0E68B00E37F15 /* SDWebImageSwiftUI in Frameworks */,
 				D47CD23D2CCF58DF00E37F15 /* FirebaseAnalytics in Frameworks */,
 				D47CD2532CCF58DF00E37F15 /* FirebaseFirestore in Frameworks */,
 				D47CD2612CCF58DF00E37F15 /* FirebaseMessaging in Frameworks */,
@@ -107,11 +111,10 @@
 		D44A22282CBEDEF600E8D847 /* ChattAppProject */ = {
 			isa = PBXGroup;
 			children = (
+				D44A22292CBEDEF600E8D847 /* ChattAppProjectApp.swift */,
 				D48CB9D62CC66CA600EBA74C /* Firebase */,
 				D44A22692CC02FD900E8D847 /* ViewModels */,
-				D44A22292CBEDEF600E8D847 /* ChattAppProjectApp.swift */,
-				D44A222B2CBEDEF600E8D847 /* LoginView.swift */,
-				D47CD2352CCF526100E37F15 /* MainMessagesView.swift */,
+				D47CD2752CD0EDC400E37F15 /* Views */,
 				D48CB9D32CC63C8900EBA74C /* components */,
 				D44A22582CBFB92D00E8D847 /* GoogleService-Info.plist */,
 				D44A222D2CBEDEF900E8D847 /* Assets.xcassets */,
@@ -131,8 +134,18 @@
 		D44A22692CC02FD900E8D847 /* ViewModels */ = {
 			isa = PBXGroup;
 			children = (
+				D47CD2702CD0E57F00E37F15 /* MainMessageViewModel.swift */,
 			);
 			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		D47CD2752CD0EDC400E37F15 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				D47CD2352CCF526100E37F15 /* MainMessagesView.swift */,
+				D44A222B2CBEDEF600E8D847 /* LoginView.swift */,
+			);
+			path = Views;
 			sourceTree = "<group>";
 		};
 		D48CB9D32CC63C8900EBA74C /* components */ = {
@@ -192,6 +205,7 @@
 				D47CD2662CCF58DF00E37F15 /* FirebaseStorage */,
 				D47CD2682CCF58DF00E37F15 /* FirebaseStorageCombine-Community */,
 				D47CD26A2CCF58DF00E37F15 /* FirebaseVertexAI */,
+				D47CD2732CD0E68B00E37F15 /* SDWebImageSwiftUI */,
 			);
 			productName = ChattAppProject;
 			productReference = D44A22262CBEDEF600E8D847 /* ChattAppProject.app */;
@@ -223,6 +237,7 @@
 			mainGroup = D44A221D2CBEDEF600E8D847;
 			packageReferences = (
 				D47CD23B2CCF58DF00E37F15 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				D47CD2722CD0E68B00E37F15 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */,
 			);
 			productRefGroup = D44A22272CBEDEF600E8D847 /* Products */;
 			projectDirPath = "";
@@ -254,6 +269,7 @@
 				D44A222C2CBEDEF600E8D847 /* LoginView.swift in Sources */,
 				D48CB9DA2CC66D4500EBA74C /* firebaseManager.swift in Sources */,
 				D48CB9D52CC63CD400EBA74C /* ImagePicker.swift in Sources */,
+				D47CD2712CD0E57F00E37F15 /* MainMessageViewModel.swift in Sources */,
 				D44A222A2CBEDEF600E8D847 /* ChattAppProjectApp.swift in Sources */,
 				D47CD2362CCF526100E37F15 /* MainMessagesView.swift in Sources */,
 			);
@@ -469,6 +485,14 @@
 				minimumVersion = 11.4.0;
 			};
 		};
+		D47CD2722CD0E68B00E37F15 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/SDWebImage/SDWebImageSwiftUI.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.1.2;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -591,6 +615,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = D47CD23B2CCF58DF00E37F15 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseVertexAI;
+		};
+		D47CD2732CD0E68B00E37F15 /* SDWebImageSwiftUI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = D47CD2722CD0E68B00E37F15 /* XCRemoteSwiftPackageReference "SDWebImageSwiftUI" */;
+			productName = SDWebImageSwiftUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
