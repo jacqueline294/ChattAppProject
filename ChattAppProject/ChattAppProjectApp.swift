@@ -11,10 +11,9 @@ import Firebase
 @main
 struct ChattAppProjectApp: App {
     
-    init() {
-        FirebaseApp.configure()
-    }
-   
+    // Add the AppDelegate to the SwiftUI lifecycle
+    @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
+    
     var body: some Scene {
         WindowGroup {
             LoginView()
