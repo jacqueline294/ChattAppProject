@@ -7,9 +7,7 @@
 
 import Foundation
 
-struct ChatUser {
-    let uid, email, profileImageUrl: String
-}
+
 
 
 class MainMessagesViewModel: ObservableObject {
@@ -36,22 +34,22 @@ class MainMessagesViewModel: ObservableObject {
                 return
             }
             
-//            self.errorMessage = "123"
+
             
             guard let data = snapshot?.data() else {
                 self.errorMessage = "No data found"
                 return
                 
             }
-//            self.errorMessage = "Data: \(data.description)"
-            let uid = data["uid"] as? String ?? ""
-            let email = data["email"] as? String ?? ""
-            let profileImageUrl = data["profileImageUrl"] as? String ?? ""
-            self.chatUser = ChatUser(uid: uid, email: email, profileImageUrl: profileImageUrl)
-            
-//            self.errorMessage = chatUser.profileImageUrl
-            
+            self.chatUser = .init(data: data)
         }
     }
+      
+    @Published var isUserCurrentLoggedOut = false
     
+    func handleSignOut() {
+        isUserCurrentLoggedOut.toggle()
+        try? FirebaseManager.shared.auth.signOut()
+        
+    }
 }

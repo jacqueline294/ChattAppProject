@@ -32,7 +32,7 @@ struct MainMessagesView: View {
     
     private var customNavBar: some View {
         HStack(spacing: 16) {
-            
+            // use the image from the creat account
             WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
                 .resizable()
                 .scaledToFill()
@@ -46,7 +46,7 @@ struct MainMessagesView: View {
             
             
             VStack(alignment: .leading, spacing: 4) {
-                let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""
+                let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""// to remove the gmail.com from the user name
                 Text(email)
                     .font(.system(size: 24, weight: .bold))
                 
@@ -75,9 +75,16 @@ struct MainMessagesView: View {
             .init(title: Text("Settings"), message: Text("What do you want to do?"), buttons: [
                 .destructive(Text("Sign Out"), action: {
                     print("handle sign out")
+                    vm.handleSignOut()
                 }),
                     .cancel()
             ])
+        }
+        .fullScreenCover(isPresented: $vm.isUserCurrentLoggedOut,
+                         onDismiss: nil){
+            LoginView(didCompleteLoginProcess: {
+                self.vm.isUserCurrentLoggedOut = false
+            })
         }
     }
     
@@ -114,9 +121,11 @@ struct MainMessagesView: View {
         }
     }
     
+    @State var shouldShowNewMessageScreen = false
+    
     private var newMessageButton: some View {
         Button {
-            
+            shouldShowNewMessageScreen.toggle()
         } label: {
             HStack {
                 Spacer()
@@ -130,6 +139,11 @@ struct MainMessagesView: View {
                 .cornerRadius(32)
                 .padding(.horizontal)
                 .shadow(radius: 15)
+        }
+        .fullScreenCover(isPresented: $shouldShowNewMessageScreen){
+            CreateNewMessageView(didSelectNewUser: {user in
+                print(user.email)
+            })
         }
     }
 }
