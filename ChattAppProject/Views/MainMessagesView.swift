@@ -12,27 +12,30 @@ import SDWebImageSwiftUI
 struct MainMessagesView: View {
     
     @State var shouldShowLogOutOptions = false
-    
+    @State var shouldNavigateToChatLogView = false
     @ObservedObject private var vm = MainMessagesViewModel()
+    @State var shouldShowNewMessageScreen = false
+    @State var chatUser: ChatUser?
     
     var body: some View {
-        NavigationView {
-            
+        NavigationStack {
             VStack {
-//                Text("User: \(vm.chatUser?.uid ?? "")")
-                
                 customNavBar
                 messagesView
+                Text("Chat log View")
             }
             .overlay(
-                newMessageButton, alignment: .bottom)
+                newMessageButton, alignment: .bottom
+            )
             .navigationBarHidden(true)
+            .navigationDestination(isPresented: $shouldNavigateToChatLogView) {
+                ChatLogView(chatUser: self.chatUser)
+            }
         }
     }
     
     private var customNavBar: some View {
         HStack(spacing: 16) {
-            // use the image from the creat account
             WebImage(url: URL(string: vm.chatUser?.profileImageUrl ?? ""))
                 .resizable()
                 .scaledToFill()
@@ -44,9 +47,8 @@ struct MainMessagesView: View {
                 )
                 .shadow(radius: 5)
             
-            
             VStack(alignment: .leading, spacing: 4) {
-                let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""// to remove the gmail.com from the user name
+                let email = vm.chatUser?.email.replacingOccurrences(of: "@gmail.com", with: "") ?? ""
                 Text(email)
                     .font(.system(size: 24, weight: .bold))
                 
@@ -58,7 +60,6 @@ struct MainMessagesView: View {
                         .font(.system(size: 12))
                         .foregroundColor(Color(.lightGray))
                 }
-                
             }
             
             Spacer()
@@ -80,8 +81,7 @@ struct MainMessagesView: View {
                     .cancel()
             ])
         }
-        .fullScreenCover(isPresented: $vm.isUserCurrentLoggedOut,
-                         onDismiss: nil){
+        .fullScreenCover(isPresented: $vm.isUserCurrentLoggedOut, onDismiss: nil) {
             LoginView(didCompleteLoginProcess: {
                 self.vm.isUserCurrentLoggedOut = false
             })
@@ -92,36 +92,35 @@ struct MainMessagesView: View {
         ScrollView {
             ForEach(0..<10, id: \.self) { num in
                 VStack {
-                    HStack(spacing: 16) {
-                        Image(systemName: "person.fill")
-                            .font(.system(size: 32))
-                            .padding(8)
-                            .overlay(RoundedRectangle(cornerRadius: 44)
-                                        .stroke(Color(.label), lineWidth: 1)
-                            )
-                        
-                        
-                        VStack(alignment: .leading) {
-                            Text("Username")
-                                .font(.system(size: 16, weight: .bold))
-                            Text("Message sent to user")
-                                .font(.system(size: 14))
-                                .foregroundColor(Color(.lightGray))
+                    NavigationLink(value: num) {
+                        HStack(spacing: 16) {
+                            Image(systemName: "person.fill")
+                                .font(.system(size: 32))
+                                .padding(8)
+                                .overlay(RoundedRectangle(cornerRadius: 44)
+                                            .stroke(Color(.label), lineWidth: 1)
+                                )
+                            
+                            VStack(alignment: .leading) {
+                                Text("Username")
+                                    .font(.system(size: 16, weight: .bold))
+                                Text("Message sent to user")
+                                    .font(.system(size: 14))
+                                    .foregroundColor(Color(.lightGray))
+                            }
+                            Spacer()
+                            Text("22d")
+                                .font(.system(size: 14, weight: .semibold))
                         }
-                        Spacer()
-                        
-                        Text("22d")
-                            .font(.system(size: 14, weight: .semibold))
                     }
+                    
                     Divider()
                         .padding(.vertical, 8)
                 }.padding(.horizontal)
-                
-            }.padding(.bottom, 50)
+            }
+            .padding(.bottom, 50)
         }
     }
-    
-    @State var shouldShowNewMessageScreen = false
     
     private var newMessageButton: some View {
         Button {
@@ -135,18 +134,21 @@ struct MainMessagesView: View {
             }
             .foregroundColor(.white)
             .padding(.vertical)
-                .background(Color.blue)
-                .cornerRadius(32)
-                .padding(.horizontal)
-                .shadow(radius: 15)
+            .background(Color.blue)
+            .cornerRadius(32)
+            .padding(.horizontal)
+            .shadow(radius: 15)
         }
-        .fullScreenCover(isPresented: $shouldShowNewMessageScreen){
-            CreateNewMessageView(didSelectNewUser: {user in
+        .fullScreenCover(isPresented: $shouldShowNewMessageScreen) {
+            CreateNewMessageView(didSelectNewUser: { user in
                 print(user.email)
+                self.shouldNavigateToChatLogView.toggle()
+                self.chatUser = user
             })
         }
     }
 }
+
 
 #Preview {
     MainMessagesView()

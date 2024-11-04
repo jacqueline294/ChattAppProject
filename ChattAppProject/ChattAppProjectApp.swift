@@ -16,9 +16,7 @@ struct ChattAppProjectApp: App {
     
     var body: some Scene {
         WindowGroup {
-            LoginView(didCompleteLoginProcess: {
-                
-            })
+            MainMessagesView()
         }
     }
 }
